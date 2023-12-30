@@ -1,0 +1,45 @@
+name: Terraform Workflow
+
+on:
+#   pull_request:
+#     branches:
+#       - main
+    workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Format
+      run: terraform fmt
+
+    - name: Terraform Plan
+      id: plan
+      run: |
+        set +e
+        OUTPUT=$(sh -c "terraform plan" 2>&1)
+        echo "::set-output name=tf_actions_output::$OUTPUT"
+        exit 0
+
+    - name: Comment Plan Output
+      uses: actions/github-script@v3
+      with:
+        script: |
+          const output = `${{ steps.plan.outputs.tf_actions_output }}`;
+          const outputTable = output.match(/(?<=Plan:)(.|\n)*?(?=\n\n)/gm).join('\n');
+          const comment = `### Terraform Plan Output\n\`\`\`\n${outputTable}\n\`\`\``;
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment,
+          });
