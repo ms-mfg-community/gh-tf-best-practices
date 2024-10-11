@@ -32,6 +32,9 @@ jobs:
             tenant-id: ${{ secrets.TENANT_ID }}
             subscription-id: ${{ secrets.SUB1_ID }}
 
+      - name: Set Environment Variable
+        run: echo "ENVIRONMENT=${{ github.job.environment }}" >> $GITHUB_ENV
+
       - name: Set TF Environment Variables
         run: | 
             cd scripts/
@@ -43,14 +46,14 @@ jobs:
             ls
 
       - name: Terraform Init
-        run: terraform init -backend-config=../parameters/azure.backend.tfbackend -lock=false
+        run: terraform init -backend-config=../config/${{ github.job.environment }}/${{ github.job.environment }}.backend.tfbackend -lock=false
         working-directory: scripts
 
       - name: Terraform Plan
         run: |
             ls
             echo "*~*~*~*~*~*~*~*Starting Terraform Plan*~*~*~*~*~*~*~*"
-            terraform plan -var="github_app_id=${{ secrets.GH_APP_ID }}" -var="github_app_installation_id=${{ secrets.GH_APP_INSTALLATION_ID}}" -out=tfplan -lock-timeout=15s
+            terraform plan -out=tfplan -lock-timeout=15s $(find ../config/${{ github.job.environment }} -name "*.tfvars" -exec echo -var-file={} \;)
         working-directory: scripts
 
     #   - name: Save Plan Output

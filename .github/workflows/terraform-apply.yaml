@@ -50,7 +50,7 @@ jobs:
         run: |
             ls
             echo "*~*~*~*~*~*~*~*Starting Terraform Plan*~*~*~*~*~*~*~*"
-            terraform plan -var="github_app_id=${{ secrets.GH_APP_ID }}" -var="github_app_installation_id=${{ secrets.GH_APP_INSTALLATION_ID}}" -out=tfplan -lock-timeout=15s
+            terraform plan -out=tfplan -lock-timeout=15s $(find ../config/dev -name "*.tfvars" -exec echo -var-file={} \;)
         working-directory: scripts
 
       - name: Save Plan Output
