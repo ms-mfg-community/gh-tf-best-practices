@@ -1,4 +1,4 @@
-app_insights_resource_group_name = "asp-dev-rg"
+app_insights_resource_group_name = "gh-tf-res-rg-dev-1"
 
 application_insights = {
   appinsight1 = {

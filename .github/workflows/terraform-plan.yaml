@@ -1,0 +1,64 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.9.5
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+            client-id: ${{ secrets.CLIENT_ID}}
+            tenant-id: ${{ secrets.TENANT_ID }}
+            subscription-id: ${{ secrets.SUB1_ID }}
+
+      - name: Set TF Environment Variables
+        run: | 
+            cd scripts/
+            echo "ARM_CLIENT_ID=${{ secrets.CLIENT_ID }}" >> $GITHUB_ENV
+            echo "ARM_SUBSCRIPTION_ID=${{ secrets.SUB1_ID }}" >> $GITHUB_ENV
+            echo "ARM_TENANT_ID=${{ secrets.TENANT_ID }}" >> $GITHUB_ENV
+            echo "ARM_USE_OIDC=true" >> $GITHUB_ENV
+            echo "GH_APP_PEM_FILE=gh_app_key.pem" >> $GITHUB_ENV
+            ls
+
+      - name: Terraform Init
+        run: terraform init -backend-config=../parameters/azure.backend.tfbackend -lock=false
+        working-directory: scripts
+
+      - name: Terraform Plan
+        run: |
+            ls
+            echo "*~*~*~*~*~*~*~*Starting Terraform Plan*~*~*~*~*~*~*~*"
+            terraform plan -var="github_app_id=${{ secrets.GH_APP_ID }}" -var="github_app_installation_id=${{ secrets.GH_APP_INSTALLATION_ID}}" -out=tfplan -lock-timeout=15s
+        working-directory: scripts
+
+    #   - name: Save Plan Output
+    #     run: terraform show -json tfplan > tfplan.json
+    #     working-directory: scripts
+
+    #   - name: Upload Plan Artifact
+    #     uses: actions/upload-artifact@v2
+    #     with:
+    #       name: tfplan
+    #       path: tfplan.json

@@ -1,7 +1,7 @@
 resource_groups = {
   resource_group_1 = {
-    name     = "asp-dev-rg"
-    location = "West Europe"
+    name     = "gh-tf-res-rg-dev-1"
+    location = "West US3"
     tags = {
       created_by = "codycarlson"
       contact_dl = "codycarlson@microsoft.com"

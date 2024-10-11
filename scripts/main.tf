@@ -1,17 +1,10 @@
-
-# resource "azurerm_resource_group" "asp_rg" {
-#   name     = "${var.resource_group_name}-${var.env}"
-#   location = var.location
-# }
-####
-
 module "resource_groups" {
-    source          = "git@github.com:bootcamp12345/ms-mfg-community.git//Resource_Groups?ref=v2"
+    source          = "git@github.com:/ms-mfg-community/gh-tf-modules-1//Resource_Groups?ref=v2"
     resource_groups = var.resource_groups
 }
 
 module "app_insights" {
-  source                        = "git@github.com:/ms-mfg-community.git//AppInsights?ref=v1"
+  source                        = "git@github.com:/ms-mfg-community.git/gh-tf-modules-1//AppInsights?ref=v1"
   resource_group_name           = var.app_insights_resource_group_name
   app_insights_additional_tags  = var.app_insights_additional_tags
   application_insights          = var.application_insights
@@ -20,8 +13,6 @@ module "app_insights" {
 
 resource "azurerm_service_plan" "example" {
   name                = "${var.app_service_plan_name}-${var.env}"
-  #resource_group_name = module.resource_groups.resource_group_ids_map.0.resource_group
-  #location            = module.resource_groups.resource_group_ids_map.0.location
   resource_group_name = var.resource_groups["resource_group_1"].name
   location            = var.resource_groups["resource_group_1"].location
   os_type             = var.asp_os_type
