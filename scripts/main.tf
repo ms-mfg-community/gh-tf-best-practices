@@ -1,10 +1,12 @@
 module "resource_groups" {
-    source          = "git@github.com:/ms-mfg-community/gh-tf-modules-1//Resource_Groups?ref=v2"
+    #source          = "git@github.com:/ms-mfg-community/gh-tf-modules-1//Resource_Groups?ref=v2"
+    source = "../../modules/Resource_Groups"
     resource_groups = var.resource_groups
 }
 
 module "app_insights" {
-  source                        = "git@github.com:/ms-mfg-community.git/gh-tf-modules-1//AppInsights?ref=v1"
+  #source                        = "git@github.com:/ms-mfg-community.git/gh-tf-modules-1//AppInsights?ref=v1"
+  source = "../../modules/AppInsights"
   resource_group_name           = var.app_insights_resource_group_name
   app_insights_additional_tags  = var.app_insights_additional_tags
   application_insights          = var.application_insights
