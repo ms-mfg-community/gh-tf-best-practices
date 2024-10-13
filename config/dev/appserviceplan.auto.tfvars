@@ -5,6 +5,8 @@ ado_key_vault_name          = null #set this to null if you don't want to use ke
 key_vault_secret_name   = null#"test" #set this to null if you don't want to use key vault secret in app settings
 ado_subscription_id     = null
 acr_secret_name         = null#"test"
+app_service_plan_name   = "myasp292912"
+environment             = "dev"
 
 
 app_services = {
